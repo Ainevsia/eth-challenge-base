@@ -1,8 +1,9 @@
 FROM golang:1.20-buster as protoc
 
 WORKDIR /protobuf-builder
-
+RUN sed -i "s|http://deb.debian.org/debian|http://mirror.sjtu.edu.cn/debian|g" /etc/apt/sources.list
 RUN apt update && apt install unzip
+RUN go env -w GO111MODULE=on && go env -w GOPROXY=https://goproxy.cn,direct
 RUN go install github.com/verloop/twirpy/protoc-gen-twirpy@latest
 RUN wget https://github.com/protocolbuffers/protobuf/releases/download/v3.19.5/protoc-3.19.5-linux-x86_64.zip && unzip protoc-3.19.5-linux-x86_64.zip && cp bin/protoc /bin/protoc
 
@@ -13,6 +14,8 @@ FROM python:3.10-slim-buster
 
 WORKDIR /ctf
 
+RUN sed -i "s|http://deb.debian.org/debian|http://mirror.sjtu.edu.cn/debian|g" /etc/apt/sources.list
+RUN pip config set global.index-url https://mirror.sjtu.edu.cn/pypi/web/simple
 RUN apt update \
     && apt install -y --no-install-recommends build-essential tini xinetd \
     && apt clean \
